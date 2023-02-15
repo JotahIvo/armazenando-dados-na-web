@@ -15,15 +15,26 @@ form.addEventListener("submit", (event) => {
     
     const nome = event.target.elements['nome'];
     const quantidade = event.target.elements['quantidade'];
+    const existe = itens.find((elemento) => elemento.nome === nome.value); //retorna um boolean
 
     const itemAtual = {
         "nome": nome.value,
         "quantidade": quantidade.value
     };
 
-    criaElemento(itemAtual);
+    if(existe){
+        itemAtual.id = existe.id;
 
-    itens.push(itemAtual);
+        atualizaElemento(itemAtual);
+
+        itens[existe.id] = itemAtual; //atualizando o array 
+    } else {
+        itemAtual.id = itens.length;
+
+        criaElemento(itemAtual);
+    
+        itens.push(itemAtual);
+    };
 
     //local storage
     localStorage.setItem("itens", JSON.stringify(itens));
@@ -32,15 +43,20 @@ form.addEventListener("submit", (event) => {
     quantidade.value = "";
 });
 
-function criaElemento(objeto){
+function criaElemento(item){
     const novoItem = document.createElement('li');
     novoItem.classList.add("item");
 
     const numeroItem = document.createElement('strong');
-    numeroItem.innerHTML = objeto.quantidade;
+    numeroItem.innerHTML = item.quantidade;
+    numeroItem.dataset.id = item.id;
 
     novoItem.appendChild(numeroItem);
-    novoItem.innerHTML += objeto.nome;
+    novoItem.innerHTML += item.nome;
 
     lista.appendChild(novoItem);
+};
+
+function atualizaElemento(item){
+    document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade;
 };
